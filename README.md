@@ -27,7 +27,7 @@ linha por variável inválida.
 | Alvo           | O que faz                                        |
 | -------------- | ------------------------------------------------ |
 | `make install` | Instala as dependências com `uv sync`            |
-| `make run`     | Sobe o servidor com `uvicorn --factory --reload` |
+| `make run`     | Sobe o servidor com `uvicorn --factory`          |
 | `make test`    | Roda a suíte com `pytest`                        |
 | `make lint`    | Confere a formatação com `black` e `isort`       |
 
