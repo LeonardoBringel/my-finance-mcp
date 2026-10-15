@@ -1,0 +1,19 @@
+services:
+  my-finance-mcp:
+    build: .
+    container_name: my-finance-mcp
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      TZ: America/Sao_Paulo
+    ports:
+      - "127.0.0.1:8010:8000"
+    networks:
+      - finance_net
+
+networks:
+  finance_net:
+    external: true
+    name: my-finance_finance_net
