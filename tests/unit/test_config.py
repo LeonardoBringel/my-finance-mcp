@@ -53,11 +53,14 @@ RANGES = {
 URL_FIELDS = ["MCP_PUBLIC_URL", "MCP_AUTH_ISSUER_URL"]
 
 INVALID_URLS = [
-    "http://finance-mcp.x.ts.net/mcp",
+    "ftp://finance-mcp.x.ts.net/mcp",
     "finance-mcp/mcp",
     "https:///mcp",
     "https://",
+    "http://",
 ]
+
+URL_MESSAGE = "deve ser uma URL http ou https absoluta"
 
 
 @pytest.fixture(autouse=True)
@@ -200,12 +203,20 @@ def test_token_secret_with_32_bytes_is_accepted(valid_env, monkeypatch, secret):
 
 @pytest.mark.parametrize("url", INVALID_URLS)
 @pytest.mark.parametrize("name", URL_FIELDS)
-def test_non_https_absolute_url_exits(
-    valid_env, monkeypatch, caplog, name, url
-):
+def test_non_http_absolute_url_exits(valid_env, monkeypatch, caplog, name, url):
     monkeypatch.setenv(name, url)
 
-    assert boot_errors(caplog) == [f"{name}: deve ser uma URL https absoluta"]
+    assert boot_errors(caplog) == [f"{name}: {URL_MESSAGE}"]
+
+
+@pytest.mark.parametrize(
+    "url", ["http://finance-mcp.x.ts.net/mcp", "https://finance-mcp.x.ts.net"]
+)
+@pytest.mark.parametrize("name", URL_FIELDS)
+def test_http_and_https_urls_are_accepted(valid_env, monkeypatch, name, url):
+    monkeypatch.setenv(name, url)
+
+    assert getattr(load_settings_or_exit(), name) == url
 
 
 def test_explicit_issuer_url_is_used(valid_env, monkeypatch):
@@ -277,7 +288,7 @@ def test_every_invalid_variable_gets_exactly_one_line(monkeypatch, caplog):
     monkeypatch.setenv("DB_POOL_SIZE", "0")
     monkeypatch.setenv("FERNET_KEY", "not-a-valid-fernet-key-value")
     monkeypatch.setenv("MCP_TOKEN_SECRET", "short")
-    monkeypatch.setenv("MCP_PUBLIC_URL", "http://finance-mcp.x.ts.net/mcp")
+    monkeypatch.setenv("MCP_PUBLIC_URL", "ftp://finance-mcp.x.ts.net/mcp")
     monkeypatch.setenv("MCP_ALLOWED_HOSTS", " , ")
     monkeypatch.setenv("LOG_LEVEL", "VERBOSE")
     monkeypatch.setenv("TRACING_ENABLED", "true")
@@ -294,7 +305,7 @@ def test_every_invalid_variable_gets_exactly_one_line(monkeypatch, caplog):
             "DB_POOL_SIZE: deve estar no intervalo 1-20",
             "FERNET_KEY: não é uma chave Fernet válida",
             "MCP_TOKEN_SECRET: deve ter pelo menos 32 bytes",
-            "MCP_PUBLIC_URL: deve ser uma URL https absoluta",
+            f"MCP_PUBLIC_URL: {URL_MESSAGE}",
             "MCP_ALLOWED_HOSTS: obrigatória",
             "LOG_LEVEL: deve ser um de DEBUG, INFO, WARNING, ERROR, CRITICAL",
             "OTEL_EXPORTER_OTLP_ENDPOINT: "
@@ -335,7 +346,7 @@ def test_values_never_reach_log_or_error(monkeypatch, caplog):
         "DB_PASSWORD": "",
         "FERNET_KEY": "ZZSECRET-not-a-fernet-key",
         "MCP_TOKEN_SECRET": "ZZSECRET-short",
-        "MCP_PUBLIC_URL": "http://ZZSECRET-host/mcp",
+        "MCP_PUBLIC_URL": "ftp://ZZSECRET-host/mcp",
         "MCP_ALLOWED_HOSTS": " , ",
         "MCP_AUTH_ISSUER_URL": "ZZSECRET-issuer",
         "MCP_TOKEN_MAX_DAYS": "ZZSECRET-days",
@@ -426,6 +437,7 @@ def test_blank_allowed_origins_is_empty_list(valid_env, monkeypatch):
             "https://user@finance-mcp.x.ts.net/mcp",
             "https://finance-mcp.x.ts.net",
         ),
+        ("http://localhost:8000/mcp", "http://localhost:8000"),
     ],
 )
 def test_issuer_defaults_to_public_url_origin(

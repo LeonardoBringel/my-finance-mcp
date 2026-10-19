@@ -40,17 +40,18 @@ RANGES = {
 LOG_LEVELS = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 
 REQUIRED_MESSAGE = "obrigatória"
-HTTPS_URL_MESSAGE = "deve ser uma URL https absoluta"
+URL_SCHEMES = ("http", "https")
+URL_MESSAGE = "deve ser uma URL http ou https absoluta"
 
 
-def _split_https_url(value: str):
+def _split_url(value: str):
     try:
         parts = urlsplit(value)
-        if parts.scheme == "https" and parts.hostname:
+        if parts.scheme in URL_SCHEMES and parts.hostname:
             return parts
     except ValueError:
         pass
-    raise ValueError(HTTPS_URL_MESSAGE)
+    raise ValueError(URL_MESSAGE)
 
 
 class Settings(BaseSettings):
@@ -132,7 +133,7 @@ class Settings(BaseSettings):
     @field_validator("MCP_PUBLIC_URL")
     @classmethod
     def _check_public_url(cls, value: str) -> str:
-        _split_https_url(value)
+        _split_url(value)
         return value
 
     @field_validator("MCP_AUTH_ISSUER_URL")
@@ -141,14 +142,15 @@ class Settings(BaseSettings):
         cls, value: str | None, info: ValidationInfo
     ) -> str | None:
         if value is not None:
-            _split_https_url(value)
+            _split_url(value)
             return value
         public_url = info.data.get("MCP_PUBLIC_URL")
         if public_url is None:
             return None
-        # Origin only: drop the path and any userinfo, keep host and port.
-        netloc = urlsplit(public_url).netloc.rpartition("@")[2]
-        return f"https://{netloc}"
+        # Origin only: keep scheme, host and port; drop path and userinfo.
+        parts = urlsplit(public_url)
+        netloc = parts.netloc.rpartition("@")[2]
+        return f"{parts.scheme}://{netloc}"
 
     @field_validator("LOG_LEVEL")
     @classmethod
