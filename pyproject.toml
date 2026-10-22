@@ -10,9 +10,11 @@ requires-python = ">=3.13"
 dependencies = [
     "cryptography>=46.0.5",
     "fastapi>=0.115.0",
+    "mcp>=2.3,<3",
     "psycopg[binary]>=3.2.0",
     "pydantic-settings>=2.7.0",
     "sqlalchemy>=2.0.48",
+    "tzdata>=2026.5",
     "uvicorn>=0.32.0",
 ]
 
@@ -21,6 +23,7 @@ dev = [
     "black>=26.5.1",
     "httpx>=0.28.0",
     "isort>=6.0.1",
+    "jsonschema>=4.26.0",
     "pre-commit>=4.7.0",
     "pytest>=9.0.3",
     "pyyaml>=6.0.3",

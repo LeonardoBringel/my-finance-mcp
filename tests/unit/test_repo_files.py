@@ -1,7 +1,10 @@
 """Static checks on the versioned files of the repository."""
 
 import subprocess
+import tomllib
 from pathlib import Path
+
+from packaging.requirements import Requirement
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -24,6 +27,30 @@ def test_pyproject_does_not_declare_alembic():
     content = (ROOT / "pyproject.toml").read_text().lower()
 
     assert "alembic" not in content
+
+
+def pyproject() -> dict:
+    return tomllib.loads((ROOT / "pyproject.toml").read_text())
+
+
+def requirement_names(specifiers: list[str]) -> set[str]:
+    return {Requirement(specifier).name for specifier in specifiers}
+
+
+def test_pyproject_pins_mcp_sdk_to_major_version_2():
+    assert "mcp>=2.3,<3" in pyproject()["project"]["dependencies"]
+
+
+def test_pyproject_declares_tzdata():
+    dependencies = pyproject()["project"]["dependencies"]
+
+    assert "tzdata" in requirement_names(dependencies)
+
+
+def test_dev_group_declares_jsonschema():
+    dev = pyproject()["dependency-groups"]["dev"]
+
+    assert "jsonschema" in requirement_names(dev)
 
 
 def test_lockfile_does_not_contain_alembic():
