@@ -10,6 +10,9 @@ Rotas HTTP:
 - `GET /health`: liveness, responde `{"status": "ok"}` sem tocar no banco.
 - `GET /ready`: readiness, confere se o banco responde com uma revisão de
   schema suportada.
+- `POST /mcp`: endpoint MCP (Streamable HTTP, sem sessão, respostas em
+  JSON). Só aceita os hosts de `MCP_ALLOWED_HOSTS` e as origens de
+  `MCP_ALLOWED_ORIGINS`.
 
 ## Pré-requisitos
 
@@ -35,6 +38,21 @@ Para rodar os mesmos gates a cada commit, instale o hook do pre-commit:
 
 ```bash
 uv run pre-commit install
+```
+
+### Testar o endpoint MCP localmente
+
+Para chamar `/mcp` pelo `localhost`, libere o host no `.env`:
+
+```bash
+MCP_ALLOWED_HOSTS=localhost:*
+```
+
+Com o servidor rodando (`make run`), abra o MCP Inspector e conecte em
+`http://localhost:8000/mcp` com o transporte Streamable HTTP:
+
+```bash
+npx @modelcontextprotocol/inspector
 ```
 
 ## Role do banco
