@@ -55,6 +55,10 @@ Com o servidor rodando (`make run`), abra o MCP Inspector e conecte em
 npx @modelcontextprotocol/inspector
 ```
 
+O endpoint exige um token pessoal (veja "Token pessoal"). No Inspector,
+adicione em Authentication o header `Authorization` com o valor
+`Bearer <token>`.
+
 ## Role do banco
 
 O script `deploy/db/create_role.sql` cria o role `my_finance_mcp` e converge
@@ -77,3 +81,43 @@ docker compose up -d --build
 ```bash
 curl http://127.0.0.1:8010/ready
 ```
+
+## Token pessoal
+
+O `/mcp` só aceita requisições com um token pessoal no header
+`Authorization: Bearer <token>`. O token é emitido por usuário do my-finance,
+com o container em execução:
+
+```bash
+docker exec -it my-finance-mcp my-finance-mcp-token issue --username <username>
+```
+
+O token sai sozinho no stdout. O resumo, com o id do usuário e a data de
+expiração, vai para o stderr. Copie o token na emissão: ele não fica
+guardado em lugar nenhum e não é mostrado de novo.
+
+`--days <n>` define a validade em dias, de 1 até `MCP_TOKEN_MAX_DAYS`. Sem
+`--days`, o token vale `MCP_TOKEN_MAX_DAYS` dias, que é também o teto. Um
+valor fora dessa faixa encerra com código 2 e não emite nada.
+
+```bash
+docker exec -it my-finance-mcp my-finance-mcp-token issue --username <username> --days 30
+```
+
+## Configurar o Claude Code
+
+Guarde o token na variável `MY_FINANCE_MCP_TOKEN` e registre o servidor:
+
+```bash
+claude mcp add --transport http my-finance https://finance-mcp.<tailnet>.ts.net/mcp --header "Authorization: Bearer ${MY_FINANCE_MCP_TOKEN}"
+```
+
+## Revogar tokens
+
+- **Um usuário:** o token carrega o `token_version` do usuário no momento da
+  emissão. Incrementar o `token_version` invalida todos os tokens dele. O
+  my-finance já faz isso na troca de senha.
+- **Todos os usuários:** troque `MCP_TOKEN_SECRET` no `.env` e suba o serviço
+  de novo. Os tokens assinados com o segredo antigo deixam de valer.
+
+Depois de revogar, emita um novo token com `my-finance-mcp-token issue`.

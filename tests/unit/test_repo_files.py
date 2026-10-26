@@ -89,3 +89,32 @@ def test_tracked_files_do_not_reference_internal_documents():
                 offenders.append(f"{path.relative_to(ROOT)}: {reference}")
 
     assert offenders == []
+
+
+def readme() -> str:
+    return (ROOT / "README.md").read_text()
+
+
+def test_readme_documents_token_issue_command_and_days():
+    content = readme()
+
+    assert (
+        "docker exec -it my-finance-mcp my-finance-mcp-token issue "
+        "--username <username>"
+    ) in content
+    assert "--days" in content
+    assert "MCP_TOKEN_MAX_DAYS" in content
+
+
+def test_readme_documents_claude_code_authorization_header():
+    assert (
+        '--header "Authorization: Bearer ${MY_FINANCE_MCP_TOKEN}"' in readme()
+    )
+
+
+def test_readme_documents_revocation_by_token_version_and_secret():
+    content = readme()
+
+    assert "token_version" in content
+    assert "troca de senha" in content
+    assert "MCP_TOKEN_SECRET" in content
