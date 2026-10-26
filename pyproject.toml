@@ -19,6 +19,9 @@ dependencies = [
     "uvicorn>=0.32.0",
 ]
 
+[project.scripts]
+my-finance-mcp-token = "my_finance_mcp.cli:main"
+
 [dependency-groups]
 dev = [
     "black>=26.5.1",
