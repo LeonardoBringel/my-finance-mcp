@@ -47,6 +47,10 @@ def test_pyproject_declares_tzdata():
     assert "tzdata" in requirement_names(dependencies)
 
 
+def test_pyproject_declares_pyjwt_directly():
+    assert "pyjwt>=2.10" in pyproject()["project"]["dependencies"]
+
+
 def test_dev_group_declares_jsonschema():
     dev = pyproject()["dependency-groups"]["dev"]
 
