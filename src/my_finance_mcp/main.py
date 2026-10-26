@@ -9,11 +9,18 @@ from fastapi import FastAPI
 
 from my_finance_mcp.api.errors import register_error_handlers
 from my_finance_mcp.api.routes import health
+from my_finance_mcp.auth.verifier import (
+    PersonalTokenVerifier,
+    build_auth_settings,
+)
 from my_finance_mcp.config import Settings, load_settings_or_exit
 from my_finance_mcp.data.db import (
     CachedRevisionReader,
     create_db_engine,
     read_schema_revisions,
+)
+from my_finance_mcp.data.repositories.users_repository import (
+    get_token_version,
 )
 from my_finance_mcp.domain.clock import SystemClock
 from my_finance_mcp.server.app import build_mcp_server, create_mcp_app
@@ -46,9 +53,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # /ready.
     engine = create_db_engine(settings)
 
+    # Each request reads users.token_version again, so a revocation takes
+    # effect on the next call.
+    verifier = PersonalTokenVerifier(
+        settings, partial(get_token_version, engine)
+    )
     # Built after the root logger has a handler, so the SDK's own
     # logging.basicConfig call leaves the level and handlers untouched.
-    mcp = build_mcp_server(ToolRuntime(SystemClock()))
+    mcp = build_mcp_server(
+        ToolRuntime(SystemClock()),
+        token_verifier=verifier,
+        auth=build_auth_settings(settings),
+    )
     # Must run before anything reads mcp.session_manager.
     mcp_app = create_mcp_app(mcp, settings)
 

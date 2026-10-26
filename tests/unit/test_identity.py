@@ -1,5 +1,6 @@
 """Fail-closed identity resolved from the SDK access token."""
 
+import ast
 from pathlib import Path
 
 import pytest
@@ -94,3 +95,75 @@ def test_only_identity_module_reads_access_token():
     )
 
     assert readers == ["my_finance_mcp/auth/identity.py"]
+
+
+def _docstring_nodes(tree: ast.Module) -> set[int]:
+    """Ids of the constants that are module, class or function docstrings."""
+    owners = (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
+    docstrings = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, owners) or not node.body:
+            continue
+        first = node.body[0]
+        if (
+            isinstance(first, ast.Expr)
+            and isinstance(first.value, ast.Constant)
+            and isinstance(first.value.value, str)
+        ):
+            docstrings.add(id(first.value))
+    return docstrings
+
+
+def _header_literals(root: Path) -> list[str]:
+    """String constants under root, outside docstrings, naming the header."""
+    offenders = []
+    for path in sorted(root.rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        docstrings = _docstring_nodes(tree)
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Constant) or id(node) in docstrings:
+                continue
+            value = node.value
+            if isinstance(value, bytes):
+                value = value.decode("latin-1")
+            if isinstance(value, str) and "authorization" in value.lower():
+                offenders.append(f"{path.relative_to(root)}:{node.lineno}")
+    return offenders
+
+
+def test_src_has_no_authorization_literal_outside_docstrings():
+    assert _header_literals(SRC) == []
+
+
+@pytest.mark.parametrize(
+    ("source", "expected"),
+    [
+        ('HEADER = "Authorization"\n', ["module.py:1"]),
+        ("HEADER = b'AUTHORIZATION'\n", ["module.py:1"]),
+        (
+            'def read(headers):\n    return headers.get(f"authorization")\n',
+            ["module.py:2"],
+        ),
+    ],
+)
+def test_authorization_literal_sweep_flags_code_constants(
+    tmp_path, source, expected
+):
+    (tmp_path / "module.py").write_text(source, encoding="utf-8")
+
+    assert _header_literals(tmp_path) == expected
+
+
+def test_authorization_literal_sweep_ignores_docstrings_and_comments(tmp_path):
+    source = (
+        '"""Routes without Authorization."""\n'
+        "# The Authorization header is read by the SDK.\n"
+        "class Route:\n"
+        '    """Reads no Authorization header."""\n'
+        "    def handle(self):\n"
+        '        """Authorization is checked upstream."""\n'
+        "        return 1\n"
+    )
+    (tmp_path / "module.py").write_text(source, encoding="utf-8")
+
+    assert _header_literals(tmp_path) == []

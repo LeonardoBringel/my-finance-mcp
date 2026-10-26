@@ -1,18 +1,23 @@
 """MCP endpoint mounted in the app factory, over the real lifespan."""
 
 import json
+import time
 from contextlib import asynccontextmanager
 
 import pytest
 from fastapi.testclient import TestClient
 
 from my_finance_mcp import main
+from my_finance_mcp.auth.tokens import issue_token
 from my_finance_mcp.config import Settings
 from my_finance_mcp.data.db import DatabaseUnavailableError
 from my_finance_mcp.main import create_app
 from tests.unit.test_main import _settings
 
 ALLOWED_HOST = "finance-mcp.x.ts.net"
+
+USER_ID = 42
+TOKEN_VERSION = 3
 
 # Stateless mode needs no initialize: each POST is served by a fresh,
 # born-ready transport. The version header is optional, but when present it
@@ -42,6 +47,21 @@ def isolated_env(monkeypatch, tmp_path):
         monkeypatch.delenv(name, raising=False)
 
 
+@pytest.fixture(autouse=True)
+def known_user(monkeypatch):
+    """Stands in for the users lookup, so /mcp accepts the test token."""
+
+    def token_version(engine, user_id):
+        return TOKEN_VERSION if user_id == USER_ID else None
+
+    monkeypatch.setattr(main, "get_token_version", token_version)
+
+
+def _bearer() -> dict[str, str]:
+    token = issue_token(_settings(), USER_ID, TOKEN_VERSION, 1, time.time())
+    return {"Authorization": f"Bearer {token}"}
+
+
 def _client(settings: Settings | None = None) -> tuple[TestClient, list]:
     """Client over create_app, with the MCP tools/list method spied on."""
     app = create_app(settings or _settings())
@@ -61,7 +81,7 @@ def _post_mcp(client: TestClient, host: str = ALLOWED_HOST, **headers):
     return client.post(
         "/mcp",
         content=json.dumps(TOOLS_LIST).encode(),
-        headers={**MCP_HEADERS, "Host": host, **headers},
+        headers={**MCP_HEADERS, **_bearer(), "Host": host, **headers},
     )
 
 
@@ -202,7 +222,9 @@ def test_body_over_the_limit_is_rejected():
 
     with client:
         response = client.post(
-            "/mcp", content=body, headers={**MCP_HEADERS, "Host": ALLOWED_HOST}
+            "/mcp",
+            content=body,
+            headers={**MCP_HEADERS, **_bearer(), "Host": ALLOWED_HOST},
         )
 
     assert len(body) == 65537
@@ -216,7 +238,9 @@ def test_body_at_the_limit_is_not_rejected():
 
     with client:
         response = client.post(
-            "/mcp", content=body, headers={**MCP_HEADERS, "Host": ALLOWED_HOST}
+            "/mcp",
+            content=body,
+            headers={**MCP_HEADERS, **_bearer(), "Host": ALLOWED_HOST},
         )
 
     assert len(body) == 65536
