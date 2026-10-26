@@ -4,6 +4,7 @@ import base64
 import importlib.metadata
 import json
 import logging
+import warnings
 from datetime import date
 from pathlib import Path
 
@@ -12,9 +13,14 @@ import jsonschema
 import pytest
 from mcp import Client
 from mcp.server.transport_security import TransportSecuritySettings
+from mcp.shared.exceptions import MCPDeprecationWarning
 from pydantic import BaseModel
 
 from my_finance_mcp.auth.identity import AuthenticatedUser, current_user
+from my_finance_mcp.auth.verifier import (
+    PersonalTokenVerifier,
+    build_auth_settings,
+)
 from my_finance_mcp.config import Settings
 from my_finance_mcp.server.app import (
     MAX_MCP_BODY_BYTES,
@@ -248,3 +254,42 @@ def test_create_mcp_app_configures_stateless_json_transport():
         allowed_hosts=["finance-mcp.x.ts.net:*", "localhost:*"],
         allowed_origins=["https://claude.ai"],
     )
+
+
+def unknown_user_lookup(user_id: int) -> int | None:
+    return None
+
+
+def auth_app(settings: Settings):
+    server = build_mcp_server(
+        make_runtime(),
+        token_verifier=PersonalTokenVerifier(settings, unknown_user_lookup),
+        auth=build_auth_settings(settings),
+    )
+    return create_mcp_app(server, settings)
+
+
+def test_create_mcp_app_with_auth_adds_protected_resource_metadata_route():
+    settings = Settings(_env_file=None, **SETTINGS_VALUES)
+
+    app = auth_app(settings)
+
+    assert sorted(route.path for route in app.routes) == [
+        "/.well-known/oauth-protected-resource/mcp",
+        "/mcp",
+    ]
+
+
+def test_building_server_and_app_with_auth_emits_no_deprecation_warning():
+    settings = Settings(_env_file=None, **SETTINGS_VALUES)
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        auth_app(settings)
+
+    deprecations = [
+        warning
+        for warning in caught
+        if issubclass(warning.category, MCPDeprecationWarning)
+    ]
+    assert deprecations == []

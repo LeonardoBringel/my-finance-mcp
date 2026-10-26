@@ -6,6 +6,8 @@ from importlib import resources
 from typing import Protocol, TypeVar
 
 from mcp.server import MCPServer
+from mcp.server.auth.provider import TokenVerifier
+from mcp.server.auth.settings import AuthSettings
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp_types import ToolAnnotations
 from starlette.applications import Starlette
@@ -35,12 +37,20 @@ def load_instructions() -> str:
 
 
 def build_mcp_server(
-    runtime: ToolRuntime, tool_modules: Sequence[ToolModule] = TOOL_MODULES
+    runtime: ToolRuntime,
+    tool_modules: Sequence[ToolModule] = TOOL_MODULES,
+    *,
+    token_verifier: TokenVerifier | None = None,
+    auth: AuthSettings | None = None,
 ) -> MCPServer:
+    # Without token_verifier and auth the server is unauthenticated, which is
+    # what the in-memory client tests use. The SDK requires both or neither.
     mcp = MCPServer(
         name=SERVER_NAME,
         version=importlib.metadata.version(SERVER_NAME),
         instructions=load_instructions(),
+        token_verifier=token_verifier,
+        auth=auth,
     )
     finance_tool = mcp.tool(annotations=READ_ONLY, structured_output=True)
     for module in tool_modules:
