@@ -23,6 +23,16 @@ def fixed_identity() -> AuthenticatedUser:
     return AuthenticatedUser(user_id=42, jti="j-1")
 
 
+def make_runtime() -> ToolRuntime:
+    # The catalog is only listed here, so no tool call reaches these.
+    return ToolRuntime(
+        FixedClock(),
+        schema_check=lambda: None,
+        user_data=lambda user_id, cache: None,
+        identity=fixed_identity,
+    )
+
+
 class Output(BaseModel):
     total: float
 
@@ -75,7 +85,7 @@ def list_tools(server):
 
 
 def make_server(*module_classes):
-    runtime = ToolRuntime(FixedClock(), identity=fixed_identity)
+    runtime = make_runtime()
     return build_mcp_server(
         runtime, tool_modules=tuple(cls() for cls in module_classes)
     )
@@ -132,7 +142,7 @@ class OptionalUserIdModule:
 
 def test_production_catalog_is_closed():
     server = build_mcp_server(
-        ToolRuntime(FixedClock(), identity=fixed_identity),
+        make_runtime(),
         tool_modules=TOOL_MODULES,
     )
 

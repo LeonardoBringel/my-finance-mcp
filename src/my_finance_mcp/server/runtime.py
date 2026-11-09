@@ -11,6 +11,8 @@ from typing import Generic, TypeVar
 from mcp_types import CallToolResult, TextContent
 
 from my_finance_mcp.auth.identity import AuthenticatedUser, current_user
+from my_finance_mcp.data.db import SchemaUnreadableError, is_supported_schema
+from my_finance_mcp.data.user_data import UserData
 from my_finance_mcp.domain.clock import Clock
 from my_finance_mcp.domain.errors import ToolInputError
 from my_finance_mcp.server.schemas.envelope import (
@@ -35,6 +37,7 @@ class CallContext:
     user_id: int
     today: date
     cache: CallCache
+    data: UserData
 
 
 @dataclass(frozen=True)
@@ -48,13 +51,36 @@ class ToolOutput(Generic[D]):
 Handler = Callable[[CallContext, A], ToolOutput[D]]
 
 
+def require_supported_schema(reader: Callable[[], list[str]]) -> None:
+    """Refuse the call unless alembic_version holds only known revisions.
+
+    A missing table or grant is refused the same way; a database that does
+    not answer propagates, so the client gets the SDK's generic error.
+    """
+    try:
+        supported = is_supported_schema(reader())
+    except SchemaUnreadableError:
+        supported = False
+    if not supported:
+        raise ToolInputError(
+            "UNSUPPORTED_SCHEMA", "Versão do schema do banco não suportada."
+        )
+
+
 class ToolRuntime:
+    # schema_check and user_data have no default so a runtime that was not
+    # wired fails when it is built, not on the first call.
     def __init__(
         self,
         clock: Clock,
+        *,
+        schema_check: Callable[[], None],
+        user_data: Callable[[int, CallCache], UserData],
         identity: Callable[[], AuthenticatedUser] = current_user,
     ) -> None:
         self._clock = clock
+        self._schema_check = schema_check
+        self._user_data = user_data
         self._identity = identity
 
     def run(
@@ -69,8 +95,12 @@ class ToolRuntime:
         status, code = "error", "INTERNAL"
         try:
             user = self._identity()
+            self._schema_check()
             today = self._clock.today()
-            ctx = CallContext(user.user_id, today, CallCache())
+            cache = CallCache()
+            ctx = CallContext(
+                user.user_id, today, cache, self._user_data(user.user_id, cache)
+            )
             output = handler(ctx, args)
             meta = Meta(
                 period=output.period,

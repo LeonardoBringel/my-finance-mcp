@@ -7,18 +7,24 @@ import re
 import time
 import weakref
 from datetime import date
+from functools import partial
 
 import pytest
 from mcp_types import TextContent
 from pydantic import BaseModel, ValidationError
 
 from my_finance_mcp.auth.identity import AuthenticatedUser, MissingIdentityError
+from my_finance_mcp.data.db import (
+    DatabaseUnavailableError,
+    SchemaUnreadableError,
+)
 from my_finance_mcp.server.runtime import (
     CallCache,
     CallContext,
     ToolInputError,
     ToolOutput,
     ToolRuntime,
+    require_supported_schema,
 )
 from my_finance_mcp.server.schemas.envelope import Period, ToolResult
 
@@ -58,8 +64,30 @@ def failing_identity() -> AuthenticatedUser:
     raise MissingIdentityError("no access token in request context")
 
 
-def make_runtime(clock=None, identity=fixed_identity) -> ToolRuntime:
-    return ToolRuntime(clock or CountingClock(), identity=identity)
+def supported_schema() -> None:
+    return None
+
+
+class StubUserData:
+    """Stands in for the user data facade; the runtime only passes it on."""
+
+    def __init__(self, user_id: int, cache: CallCache) -> None:
+        self.user_id = user_id
+        self.cache = cache
+
+
+def make_runtime(
+    clock=None,
+    identity=fixed_identity,
+    schema_check=supported_schema,
+    user_data=StubUserData,
+) -> ToolRuntime:
+    return ToolRuntime(
+        clock or CountingClock(),
+        schema_check=schema_check,
+        user_data=user_data,
+        identity=identity,
+    )
 
 
 def ok_handler(ctx, args):
@@ -395,3 +423,185 @@ def test_tool_input_error_logs_no_arguments_message_or_hint(caplog):
     )
     assert caplog.records
     assert leaked_markers(caplog) == []
+
+
+UNSUPPORTED_SCHEMA_TEXT = (
+    "UNSUPPORTED_SCHEMA: Versão do schema do banco não suportada."
+)
+
+
+def returning(revisions):
+    return lambda: list(revisions)
+
+
+def raising(error: Exception):
+    def reader():
+        raise error
+
+    return reader
+
+
+def schema_gate(reader):
+    return partial(require_supported_schema, reader)
+
+
+def test_schema_check_runs_after_identity_and_before_user_data_and_handler():
+    events = []
+
+    def identity():
+        events.append("identity")
+        return USER
+
+    def schema_check():
+        events.append("schema_check")
+
+    def user_data(user_id, cache):
+        events.append("user_data")
+        return StubUserData(user_id, cache)
+
+    def handler(ctx, args):
+        events.append("handler")
+        return ToolOutput(data=SampleData(amount=1))
+
+    runtime = make_runtime(
+        identity=identity, schema_check=schema_check, user_data=user_data
+    )
+    run_ok(runtime, handler)
+
+    assert events == ["identity", "schema_check", "user_data", "handler"]
+
+
+def test_failing_identity_skips_schema_check_and_user_data():
+    events = []
+
+    def schema_check():
+        events.append("schema_check")
+
+    def user_data(user_id, cache):
+        events.append("user_data")
+        return StubUserData(user_id, cache)
+
+    runtime = make_runtime(
+        identity=failing_identity,
+        schema_check=schema_check,
+        user_data=user_data,
+    )
+    with pytest.raises(MissingIdentityError):
+        run_ok(runtime)
+
+    assert events == []
+
+
+@pytest.mark.parametrize(
+    "reader",
+    [
+        returning(["0010"]),
+        returning([]),
+        returning(["0009", "0010"]),
+        raising(SchemaUnreadableError("permission denied")),
+    ],
+    ids=["unknown", "empty", "mixed", "unreadable"],
+)
+def test_unsupported_schema_is_refused_without_running_handler(reader):
+    calls = []
+
+    def user_data(user_id, cache):
+        calls.append("user_data")
+        return StubUserData(user_id, cache)
+
+    def handler(ctx, args):
+        calls.append("handler")
+        return ToolOutput(data=SampleData(amount=1))
+
+    runtime = make_runtime(
+        schema_check=schema_gate(reader), user_data=user_data
+    )
+    result = run_ok(runtime, handler)
+
+    assert result.is_error is True
+    assert result.structured_content is None
+    [block] = result.content
+    assert block.text == UNSUPPORTED_SCHEMA_TEXT
+    assert calls == []
+
+
+def test_supported_schema_lets_the_handler_run():
+    result = run_ok(make_runtime(schema_check=schema_gate(returning(["0009"]))))
+
+    assert result.is_error is False
+    assert result.structured_content["data"] == {"amount": 10.5}
+
+
+def test_unavailable_database_during_schema_check_propagates():
+    error = DatabaseUnavailableError()
+    calls = []
+
+    def handler(ctx, args):
+        calls.append(ctx)
+        return ToolOutput(data=SampleData(amount=1))
+
+    runtime = make_runtime(schema_check=schema_gate(raising(error)))
+    with pytest.raises(DatabaseUnavailableError) as exc_info:
+        run_ok(runtime, handler)
+
+    assert exc_info.value is error
+    assert calls == []
+
+
+def test_refused_schema_is_logged_with_its_code(caplog):
+    caplog.set_level(logging.INFO)
+
+    run_ok(make_runtime(schema_check=schema_gate(returning(["0010"]))))
+
+    [line] = summary_lines(caplog)
+    match = SUMMARY.fullmatch(line)
+    assert match is not None, line
+    assert match.group("status", "code") == ("error", "UNSUPPORTED_SCHEMA")
+
+
+def test_context_data_is_built_for_the_caller_and_its_cache():
+    built = []
+    received = []
+
+    def user_data(user_id, cache):
+        data = StubUserData(user_id, cache)
+        built.append((user_id, cache, data))
+        return data
+
+    def handler(ctx, args):
+        received.append(ctx)
+        return ToolOutput(data=SampleData(amount=1))
+
+    run_ok(make_runtime(user_data=user_data), handler)
+
+    [(user_id, cache, data)] = built
+    [ctx] = received
+    assert user_id == 42
+    assert ctx.data is data
+    assert cache is ctx.cache
+
+
+@pytest.mark.parametrize("raises", [False, True])
+def test_context_data_is_not_kept_after_the_call(raises):
+    refs = []
+
+    def handler(ctx, args):
+        refs.append(weakref.ref(ctx.data))
+        if raises:
+            raise ToolInputError("UNKNOWN_CATEGORY", "Categoria 'x'.")
+        return ToolOutput(data=SampleData(amount=1))
+
+    result = run_ok(make_runtime(), handler)
+    gc.collect()
+
+    assert result.is_error is raises
+    assert refs[0]() is None
+
+
+@pytest.mark.parametrize("missing", ["schema_check", "user_data"])
+def test_runtime_without_schema_check_or_user_data_cannot_be_built(missing):
+    wiring = {"schema_check": supported_schema, "user_data": StubUserData}
+    del wiring[missing]
+
+    with pytest.raises(TypeError, match=missing):
+        ToolRuntime(CountingClock(), identity=fixed_identity, **wiring)

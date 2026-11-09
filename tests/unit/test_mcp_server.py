@@ -6,6 +6,7 @@ import json
 import logging
 import warnings
 from datetime import date
+from functools import partial
 from pathlib import Path
 
 import anyio
@@ -32,6 +33,7 @@ from my_finance_mcp.server.runtime import (
     ToolInputError,
     ToolOutput,
     ToolRuntime,
+    require_supported_schema,
 )
 from my_finance_mcp.server.schemas.envelope import ToolResult
 
@@ -101,8 +103,23 @@ class SampleModule:
             )
 
 
-def make_runtime(identity=fixed_identity) -> ToolRuntime:
-    return ToolRuntime(FixedClock(), identity=identity)
+def supported_schema() -> None:
+    return None
+
+
+def stub_user_data(user_id: int, cache) -> object:
+    return object()
+
+
+def make_runtime(
+    identity=fixed_identity, schema_check=supported_schema
+) -> ToolRuntime:
+    return ToolRuntime(
+        FixedClock(),
+        schema_check=schema_check,
+        user_data=stub_user_data,
+        identity=identity,
+    )
 
 
 def with_client(server, action):
@@ -130,9 +147,12 @@ def call_sample(server, arguments=None):
     return with_client(server, action)
 
 
-def sample_server(handler=ok_handler, identity=fixed_identity):
+def sample_server(
+    handler=ok_handler, identity=fixed_identity, schema_check=supported_schema
+):
     return build_mcp_server(
-        make_runtime(identity), tool_modules=(SampleModule(handler),)
+        make_runtime(identity, schema_check),
+        tool_modules=(SampleModule(handler),),
     )
 
 
@@ -199,6 +219,44 @@ def test_tool_input_error_call_returns_coded_text():
     assert block.text == (
         "UNKNOWN_CATEGORY: Categoria ZZMSG321 não encontrada. ZZHINT456"
     )
+
+
+def schema_gate(revisions):
+    return partial(require_supported_schema, lambda: list(revisions))
+
+
+def test_client_call_with_unsupported_schema_skips_the_tool():
+    calls = []
+
+    def handler(ctx, args):
+        calls.append(args)
+        return ok_handler(ctx, args)
+
+    server = sample_server(handler, schema_check=schema_gate(["0010"]))
+    result = call_sample(server)
+
+    assert result.is_error is True
+    assert result.structured_content is None
+    [block] = result.content
+    assert block.text == (
+        "UNSUPPORTED_SCHEMA: Versão do schema do banco não suportada."
+    )
+    assert calls == []
+
+
+def test_client_call_with_supported_schema_runs_the_tool():
+    calls = []
+
+    def handler(ctx, args):
+        calls.append(args)
+        return ok_handler(ctx, args)
+
+    server = sample_server(handler, schema_check=schema_gate(["0009"]))
+    result = call_sample(server)
+
+    assert result.is_error is False
+    assert result.structured_content["data"]["label"] == "total"
+    assert calls == ["ZZDESC123"]
 
 
 @pytest.mark.parametrize(

@@ -5,6 +5,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from functools import partial
 
+from cryptography.fernet import Fernet
 from fastapi import FastAPI
 
 from my_finance_mcp.api.errors import register_error_handlers
@@ -22,10 +23,14 @@ from my_finance_mcp.data.db import (
 from my_finance_mcp.data.repositories.users_repository import (
     get_token_version,
 )
+from my_finance_mcp.data.user_data import DbUserData
 from my_finance_mcp.domain.clock import SystemClock
 from my_finance_mcp.server.app import build_mcp_server, create_mcp_app
 from my_finance_mcp.server.mount import McpMount
-from my_finance_mcp.server.runtime import ToolRuntime
+from my_finance_mcp.server.runtime import (
+    ToolRuntime,
+    require_supported_schema,
+)
 
 
 @asynccontextmanager
@@ -52,6 +57,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # Creating the engine does not connect; the database is first touched by
     # /ready.
     engine = create_db_engine(settings)
+    # The key was validated with the settings.
+    fernet = Fernet(settings.FERNET_KEY.get_secret_value())
+    # Shared by /ready and the tool calls, so both see the same cached read.
+    revision_reader = CachedRevisionReader(
+        partial(read_schema_revisions, engine)
+    )
+    runtime = ToolRuntime(
+        SystemClock(),
+        schema_check=partial(require_supported_schema, revision_reader),
+        user_data=partial(DbUserData, engine, fernet),
+    )
 
     # Each request reads users.token_version again, so a revocation takes
     # effect on the next call.
@@ -61,7 +77,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # Built after the root logger has a handler, so the SDK's own
     # logging.basicConfig call leaves the level and handlers untouched.
     mcp = build_mcp_server(
-        ToolRuntime(SystemClock()),
+        runtime,
         token_verifier=verifier,
         auth=build_auth_settings(settings),
     )
@@ -74,9 +90,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = settings
     app.state.engine = engine
     app.state.mcp = mcp
-    app.state.revision_reader = CachedRevisionReader(
-        partial(read_schema_revisions, engine)
-    )
+    app.state.revision_reader = revision_reader
     register_error_handlers(app)
     app.include_router(health.router)
     # After the health routes: the router takes the first full match, and the
