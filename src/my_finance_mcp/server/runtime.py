@@ -12,6 +12,7 @@ from mcp_types import CallToolResult, TextContent
 
 from my_finance_mcp.auth.identity import AuthenticatedUser, current_user
 from my_finance_mcp.domain.clock import Clock
+from my_finance_mcp.domain.errors import ToolInputError
 from my_finance_mcp.server.schemas.envelope import (
     D,
     Meta,
@@ -23,23 +24,6 @@ from my_finance_mcp.server.schemas.envelope import (
 logger = logging.getLogger(__name__)
 
 A = TypeVar("A")
-
-
-class ToolInputError(Exception):
-    """A business error the model can correct, returned as coded text."""
-
-    def __init__(self, code: str, message: str, hint: str = "") -> None:
-        # Only the code goes to Exception.args: message and hint may carry
-        # user data and must not surface in any log or traceback.
-        super().__init__(code)
-        self.code = code
-        self.message = message
-        self.hint = hint
-
-    @property
-    def text(self) -> str:
-        text = f"{self.code}: {self.message}"
-        return f"{text} {self.hint}" if self.hint else text
 
 
 class CallCache(dict):
