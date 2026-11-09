@@ -106,6 +106,17 @@ def test_suggestions_are_at_most_three_user_categories():
     assert error.hint == "Categorias parecidas: Lazer 4, Lazer 3, Lazer 2."
 
 
+def test_suggestions_stay_at_three_when_one_match_groups_more_names():
+    # Every name below normalizes to "lazer", so a single close match
+    # carries five original names.
+    names = ["Lazer", "Lázer", "Lazér", "Lâzer", "Lãzer"]
+    categories = [Category(i, name) for i, name in enumerate(names, start=1)]
+
+    error = _unknown(["lazerr"], categories)
+
+    assert error.hint == "Categorias parecidas: Lazer, Lázer, Lazér."
+
+
 def test_suggestions_never_offer_the_uncategorized_label():
     error = _unknown(["(sem categoriaa)"])
 
