@@ -84,6 +84,20 @@ def test_unknown_name_without_similar_category_has_no_hint():
     assert error.text == "UNKNOWN_CATEGORY: Categoria 'xpto' não encontrada."
 
 
+def test_name_exactly_at_the_similarity_cutoff_is_suggested():
+    # "mer" against "mercado" scores exactly 0.6 (2 * 3 / 10).
+    error = _unknown(["mer"])
+
+    assert error.hint == "Categorias parecidas: Mercado."
+
+
+def test_name_just_below_the_similarity_cutoff_is_not_suggested():
+    # "mercazzzzz" against "mercado" scores 10 / 17, about 0.588.
+    error = _unknown(["mercazzzzz"])
+
+    assert error.hint == ""
+
+
 def test_suggestions_are_at_most_three_user_categories():
     categories = [Category(i, f"Lazer {i}") for i in range(1, 5)]
 
