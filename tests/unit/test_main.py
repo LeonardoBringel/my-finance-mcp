@@ -1,18 +1,36 @@
 """App factory: fail-fast boot, wiring, shutdown and hidden docs."""
 
 import base64
+import gc
 import logging
+import weakref
+from datetime import date
 from types import SimpleNamespace
 
 import psycopg
 import pytest
+from cryptography.fernet import Fernet
 from fastapi.testclient import TestClient
+from mcp.server.auth.middleware.auth_context import auth_context_var
+from mcp.server.auth.middleware.bearer_auth import (
+    AuthenticatedUser as SdkAuthenticatedUser,
+)
+from mcp.server.auth.provider import AccessToken
+from pydantic import BaseModel
 
 from my_finance_mcp import main
 from my_finance_mcp.api.routes.health import get_revision_reader
 from my_finance_mcp.config import Settings
 from my_finance_mcp.data.db import CachedRevisionReader
+from my_finance_mcp.data.repositories import (
+    categories_repository,
+    transactions_repository,
+)
+from my_finance_mcp.data.rows import LoadedRows
+from my_finance_mcp.data.user_data import DbUserData
 from my_finance_mcp.main import create_app
+from my_finance_mcp.server.runtime import ToolOutput
+from my_finance_mcp.server.schemas.envelope import ToolResult
 
 CONFIG_LOGGER = "my_finance_mcp.config"
 
@@ -162,3 +180,133 @@ def test_logging_uses_the_configured_level(level, expected):
     create_app(_settings(LOG_LEVEL=level))
 
     assert logging.getLogger().level == expected
+
+
+class Probe(BaseModel):
+    ok: bool
+
+
+def run_tool(app, handler, user_id=42):
+    """Runs a call through the app runtime as if the token named user_id."""
+    token = AccessToken(
+        token="opaque",
+        client_id="client",
+        scopes=[],
+        subject=str(user_id),
+        claims={"jti": "j-1"},
+    )
+    reset = auth_context_var.set(SdkAuthenticatedUser(token))
+    try:
+        return app.state.runtime.run("probe", None, handler, ToolResult[Probe])
+    finally:
+        auth_context_var.reset(reset)
+
+
+def probe_output():
+    return ToolOutput(data=Probe(ok=True))
+
+
+@pytest.fixture
+def supported_revisions(monkeypatch):
+    reads = []
+
+    def spy_read(engine):
+        reads.append(engine)
+        return ["0009"]
+
+    monkeypatch.setattr(main, "read_schema_revisions", spy_read)
+    return reads
+
+
+def test_ready_and_tool_schema_check_share_one_read(supported_revisions):
+    app = create_app(_settings())
+    client = TestClient(app)
+    handled = []
+
+    def handler(ctx, args):
+        handled.append(ctx.user_id)
+        return probe_output()
+
+    ready = client.get("/ready")
+    result = run_tool(app, handler)
+
+    assert ready.status_code == 200
+    assert result.is_error is False
+    assert handled == [42]
+    assert supported_revisions == [app.state.engine]
+
+
+def test_user_data_reads_with_app_engine_caller_and_call_cache(
+    supported_revisions, monkeypatch
+):
+    reads = []
+
+    def list_by_years(engine, fernet, user_id, years):
+        reads.append((engine, user_id, list(years)))
+        return {year: LoadedRows(rows=(), skipped=0) for year in years}
+
+    monkeypatch.setattr(transactions_repository, "list_by_years", list_by_years)
+    app = create_app(_settings())
+    seen = []
+
+    def handler(ctx, args):
+        ctx.data.transactions_between(date(2026, 1, 1), date(2026, 1, 31))
+        seen.append((type(ctx.data), set(ctx.cache)))
+        return probe_output()
+
+    result = run_tool(app, handler, user_id=7)
+
+    assert result.is_error is False
+    assert reads == [(app.state.engine, 7, [2026])]
+    assert seen == [(DbUserData, {("transactions", 7, 2026)})]
+
+
+def test_user_data_decrypts_with_the_settings_key(
+    supported_revisions, monkeypatch
+):
+    fernets = []
+
+    def list_categories(engine, fernet, user_id):
+        fernets.append(fernet)
+        return []
+
+    monkeypatch.setattr(
+        categories_repository, "list_categories", list_categories
+    )
+    settings = _settings()
+    app = create_app(settings)
+
+    def handler(ctx, args):
+        ctx.data.categories()
+        return probe_output()
+
+    run_tool(app, handler)
+
+    token = Fernet(settings.FERNET_KEY.get_secret_value()).encrypt(b"Mercado")
+    [fernet] = fernets
+    assert fernet.decrypt(token) == b"Mercado"
+
+
+def test_loaded_rows_are_not_kept_after_the_call(
+    supported_revisions, monkeypatch
+):
+    refs = []
+
+    def list_by_years(engine, fernet, user_id, years):
+        loaded = {year: LoadedRows(rows=(), skipped=0) for year in years}
+        refs.extend(weakref.ref(rows) for rows in loaded.values())
+        return loaded
+
+    monkeypatch.setattr(transactions_repository, "list_by_years", list_by_years)
+    app = create_app(_settings())
+
+    def handler(ctx, args):
+        ctx.data.transactions_between(date(2025, 12, 1), date(2026, 1, 31))
+        return probe_output()
+
+    result = run_tool(app, handler)
+    gc.collect()
+
+    assert result.is_error is False
+    assert len(refs) == 2
+    assert [ref() for ref in refs] == [None, None]

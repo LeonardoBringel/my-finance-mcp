@@ -90,6 +90,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = settings
     app.state.engine = engine
     app.state.mcp = mcp
+    app.state.runtime = runtime
     app.state.revision_reader = revision_reader
     register_error_handlers(app)
     app.include_router(health.router)
