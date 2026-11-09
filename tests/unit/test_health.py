@@ -8,8 +8,8 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from my_finance_mcp.api.errors import register_error_handlers
-from my_finance_mcp.api.routes import health
 from my_finance_mcp.api.routes.health import get_revision_reader, router
+from my_finance_mcp.data import db
 from my_finance_mcp.data.db import (
     DatabaseUnavailableError,
     SchemaUnreadableError,
@@ -98,7 +98,7 @@ def test_ready_with_supported_revisions(revisions):
 
 def test_ready_lists_distinct_revisions_in_order(monkeypatch):
     # A single supported revision cannot show ordering, so widen the set.
-    monkeypatch.setattr(health, "SUPPORTED_SCHEMA_REVISIONS", ("0008", "0009"))
+    monkeypatch.setattr(db, "SUPPORTED_SCHEMA_REVISIONS", ("0008", "0009"))
     client = _client_with_reader(_returning(["0009", "0008", "0009"]))
 
     response = client.get("/ready")

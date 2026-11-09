@@ -21,6 +21,7 @@ from my_finance_mcp.data.db import (
     DatabaseUnavailableError,
     SchemaUnreadableError,
     create_db_engine,
+    is_supported_schema,
     read_schema_revisions,
 )
 
@@ -62,6 +63,16 @@ def wrapped(error: Exception) -> DBAPIError:
 
 def test_supported_schema_revisions():
     assert SUPPORTED_SCHEMA_REVISIONS == ("0009",)
+
+
+@pytest.mark.parametrize("revisions", [["0009"], ["0009", "0009"]])
+def test_only_supported_revisions_mean_supported_schema(revisions):
+    assert is_supported_schema(revisions) is True
+
+
+@pytest.mark.parametrize("revisions", [[], ["0010"], ["0009", "0010"]])
+def test_empty_or_any_unknown_revision_means_unsupported_schema(revisions):
+    assert is_supported_schema(revisions) is False
 
 
 def test_engine_options_are_read_only_bounded_and_pre_pinged(

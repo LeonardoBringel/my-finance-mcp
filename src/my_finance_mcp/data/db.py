@@ -3,7 +3,7 @@
 import logging
 import threading
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 
 from sqlalchemy import URL, Engine, create_engine, text
 from sqlalchemy.exc import DBAPIError, ProgrammingError
@@ -15,6 +15,13 @@ logger = logging.getLogger(__name__)
 
 SUPPORTED_SCHEMA_REVISIONS: tuple[str, ...] = ("0009",)
 READY_CACHE_SECONDS = 30
+
+
+def is_supported_schema(revisions: Sequence[str]) -> bool:
+    """True when alembic_version has rows and every one is supported."""
+    return bool(revisions) and all(
+        revision in SUPPORTED_SCHEMA_REVISIONS for revision in revisions
+    )
 
 
 class DatabaseUnavailableError(Exception):

@@ -7,9 +7,9 @@ from fastapi import APIRouter, Depends, Request
 
 from my_finance_mcp.api.errors import ApiError
 from my_finance_mcp.data.db import (
-    SUPPORTED_SCHEMA_REVISIONS,
     DatabaseUnavailableError,
     SchemaUnreadableError,
+    is_supported_schema,
 )
 
 logger = logging.getLogger(__name__)
@@ -46,9 +46,7 @@ def ready(
         # The database reason was already logged where it was read.
         raise _unsupported_schema()
 
-    if not revisions or any(
-        revision not in SUPPORTED_SCHEMA_REVISIONS for revision in revisions
-    ):
+    if not is_supported_schema(revisions):
         logger.warning("Revisões de schema não suportadas: %r", revisions)
         raise _unsupported_schema()
 
