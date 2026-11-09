@@ -33,8 +33,11 @@ def test_loaded_rows_without_skipped_rows_has_no_warning():
     assert LoadedRows(rows=(), skipped=0).warnings == ()
 
 
-def test_loaded_rows_with_skipped_rows_warns():
-    assert LoadedRows(rows=(), skipped=2).warnings == ("SKIPPED_INVALID_ROWS",)
+@pytest.mark.parametrize("skipped", [1, 2])
+def test_loaded_rows_with_skipped_rows_warns(skipped):
+    assert LoadedRows(rows=(), skipped=skipped).warnings == (
+        "SKIPPED_INVALID_ROWS",
+    )
 
 
 @pytest.mark.parametrize(
