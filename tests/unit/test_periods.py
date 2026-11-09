@@ -94,6 +94,10 @@ def test_single_day_equal_to_today_counts_one_day():
     assert days_considered(TODAY, TODAY, TODAY) == 1
 
 
+def test_period_starting_today_and_ending_later_counts_only_today():
+    assert days_considered(TODAY, date(2026, 10, 31), TODAY) == 1
+
+
 def test_leap_day_to_first_of_march_counts_two_days():
     assert days_considered(date(2024, 2, 29), date(2024, 3, 1), TODAY) == 2
 
