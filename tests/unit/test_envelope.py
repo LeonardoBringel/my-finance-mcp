@@ -1,11 +1,18 @@
 """Tool result envelope models."""
 
 from datetime import date
+from typing import get_args
 
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from my_finance_mcp.server.schemas.envelope import Meta, Period, ToolResult
+from my_finance_mcp.server.schemas.envelope import (
+    Meta,
+    Period,
+    ToolResult,
+    WarningCode,
+    ordered_warnings,
+)
 
 REFERENCE_DATE = date(2026, 10, 8)
 WARNING_CODES = [
@@ -86,3 +93,28 @@ def test_meta_json_schema_does_not_require_period():
     schema = ToolResult[SampleData].model_json_schema()
 
     assert "period" not in schema["$defs"]["Meta"]["required"]
+
+
+def test_warning_code_order_is_fixed():
+    assert get_args(WarningCode) == (
+        "NO_DATA",
+        "PARTIAL_PERIOD",
+        "INCLUDES_FUTURE",
+        "SKIPPED_INVALID_ROWS",
+        "INSUFFICIENT_HISTORY",
+        "OVERLAPPING_PERIODS",
+    )
+
+
+def test_ordered_warnings_sorts_by_code_order_and_drops_repeats():
+    codes = ["SKIPPED_INVALID_ROWS", "NO_DATA", "PARTIAL_PERIOD", "NO_DATA"]
+
+    assert ordered_warnings(codes) == (
+        "NO_DATA",
+        "PARTIAL_PERIOD",
+        "SKIPPED_INVALID_ROWS",
+    )
+
+
+def test_ordered_warnings_of_nothing_is_empty():
+    assert ordered_warnings([]) == ()
