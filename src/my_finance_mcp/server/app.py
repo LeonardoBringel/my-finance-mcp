@@ -14,6 +14,9 @@ from starlette.applications import Starlette
 
 from my_finance_mcp.config import Settings
 from my_finance_mcp.server.runtime import ToolRuntime
+from my_finance_mcp.server.tools.calendar import CalendarTools
+from my_finance_mcp.server.tools.categories import CategoryTools
+from my_finance_mcp.server.tools.summary import SummaryTools
 
 F = TypeVar("F", bound=Callable[..., object])
 
@@ -28,7 +31,11 @@ class ToolModule(Protocol):
     ) -> None: ...
 
 
-TOOL_MODULES: tuple[ToolModule, ...] = ()
+TOOL_MODULES: tuple[ToolModule, ...] = (
+    CalendarTools(),
+    CategoryTools(),
+    SummaryTools(),
+)
 
 
 def load_instructions() -> str:

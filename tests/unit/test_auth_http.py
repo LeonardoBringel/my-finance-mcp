@@ -27,6 +27,7 @@ from tests.unit.test_mcp_http import (
     TOOLS_LIST,
     TOOLS_LIST_RESULT,
     _client,
+    _listed_tools,
     _tools_list_body,
 )
 
@@ -169,7 +170,7 @@ def test_mcp_with_a_valid_token_runs_tools_list(versions, name, scheme):
         response = _post(client, **{name: f"{scheme} {_token()}"})
 
     assert response.status_code == 200
-    assert response.json() == TOOLS_LIST_RESULT
+    assert _listed_tools(response) == TOOLS_LIST_RESULT
     assert calls == ["tools/list"]
 
 

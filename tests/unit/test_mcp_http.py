@@ -28,7 +28,12 @@ MCP_HEADERS = {
     "Content-Type": "application/json",
     "MCP-Protocol-Version": "2025-11-25",
 }
-TOOLS_LIST_RESULT = {"jsonrpc": "2.0", "id": 1, "result": {"tools": []}}
+# JSON-RPC version, request id and sorted tool names of a tools/list answer.
+TOOLS_LIST_RESULT = (
+    "2.0",
+    1,
+    ["get_date_context", "get_period_summary", "list_categories"],
+)
 
 MAX_BODY_BYTES = 65536
 
@@ -85,6 +90,12 @@ def _post_mcp(client: TestClient, host: str = ALLOWED_HOST, **headers):
     )
 
 
+def _listed_tools(response) -> tuple:
+    body = response.json()
+    names = sorted(tool["name"] for tool in body["result"]["tools"])
+    return body["jsonrpc"], body["id"], names
+
+
 def _tools_list_body(size: int) -> bytes:
     raw = json.dumps(TOOLS_LIST).encode()
     # Whitespace before the closing brace keeps the JSON-RPC body valid.
@@ -98,7 +109,7 @@ def test_tools_list_over_http_returns_the_result():
         response = _post_mcp(client)
 
     assert response.status_code == 200
-    assert response.json() == TOOLS_LIST_RESULT
+    assert _listed_tools(response) == TOOLS_LIST_RESULT
     assert calls == ["tools/list"]
 
 
@@ -189,7 +200,7 @@ def test_host_with_port_matches_a_wildcard_port_item():
         response = _post_mcp(client, host="finance-mcp.x.ts.net:443")
 
     assert response.status_code == 200
-    assert response.json() == TOOLS_LIST_RESULT
+    assert _listed_tools(response) == TOOLS_LIST_RESULT
     assert calls == ["tools/list"]
 
 
@@ -212,7 +223,7 @@ def test_origin_in_the_allowlist_is_processed():
         response = _post_mcp(client, Origin="https://finance-mcp.x.ts.net")
 
     assert response.status_code == 200
-    assert response.json() == TOOLS_LIST_RESULT
+    assert _listed_tools(response) == TOOLS_LIST_RESULT
     assert calls == ["tools/list"]
 
 

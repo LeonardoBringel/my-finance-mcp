@@ -25,7 +25,6 @@ from my_finance_mcp.auth.verifier import (
 from my_finance_mcp.config import Settings
 from my_finance_mcp.server.app import (
     MAX_MCP_BODY_BYTES,
-    TOOL_MODULES,
     build_mcp_server,
     create_mcp_app,
 )
@@ -156,11 +155,14 @@ def sample_server(
     )
 
 
-def test_production_catalog_is_empty():
+def test_production_catalog_lists_exactly_the_three_base_tools():
     server = build_mcp_server(make_runtime())
 
-    assert TOOL_MODULES == ()
-    assert list_tools(server) == []
+    assert sorted(tool.name for tool in list_tools(server)) == [
+        "get_date_context",
+        "get_period_summary",
+        "list_categories",
+    ]
 
 
 def test_server_publishes_instructions_file_name_and_version():
