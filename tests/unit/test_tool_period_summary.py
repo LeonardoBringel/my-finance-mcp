@@ -173,6 +173,14 @@ def test_without_expenses_average_is_zero_and_inherited_share_is_null():
     assert data["inherited_installments_pct"] is None
 
 
+def test_half_cents_are_added_exactly_and_rounded_only_in_the_output():
+    rows = [tx("10.005", "saida"), tx("10.005", "saida")]
+
+    data = Harness(FakeUserData(rows)).call_ok(SEPTEMBER)["data"]
+
+    assert data["saidas"] == 20.01
+
+
 def test_inherited_share_counts_only_installments_after_the_first():
     rows = [
         tx("50.00", "saida", installment=(2, 3)),

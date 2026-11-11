@@ -66,6 +66,12 @@ def test_totals_split_by_flow_and_leave_unknown_types_out():
     assert summary.has_data is True
 
 
+def test_totals_add_exact_values_without_rounding_each_row():
+    rows = [tx("10.005", "saida"), tx("10.005", "saida")]
+
+    assert summarize(rows).saidas == Decimal("20.010")
+
+
 def test_balance_is_negative_when_expenses_exceed_income():
     rows = [
         tx("100.00", "entrada", "Salário", "entrada"),
