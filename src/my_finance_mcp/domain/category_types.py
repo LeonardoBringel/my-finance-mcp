@@ -16,6 +16,9 @@ ALL_TYPES = (EXPENSE, INCOME, INVESTMENT, BOTH)
 # Label of the group of transactions without a category.
 UNCATEGORIZED_LABEL = "(sem categoria)"
 
+# Shown for a category whose name is empty.
+UNNAMED_LABEL = "(sem nome)"
+
 Flow = Literal["saida", "entrada", "investimento"]
 CategoryType = Literal["entrada", "saida", "investimento", "ambos"]
 
@@ -33,3 +36,8 @@ def flow_of(category_type: str | None) -> Flow | None:
     if category_type is None:
         return None
     return _FLOWS.get(category_type)
+
+
+def display_name(name: str) -> str:
+    """Name to show for a category; blank names get a placeholder."""
+    return name if name.strip() else UNNAMED_LABEL
