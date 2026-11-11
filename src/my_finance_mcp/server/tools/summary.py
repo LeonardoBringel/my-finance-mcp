@@ -1,6 +1,5 @@
 """The get_period_summary tool: dashboard totals of a period."""
 
-from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
 
@@ -19,6 +18,8 @@ from my_finance_mcp.server.schemas.summary import (
 )
 from my_finance_mcp.server.tools._types import EndDate, StartDate
 from my_finance_mcp.services.summary import summarize_period
+
+TOOL_NAME = "get_period_summary"
 
 
 @dataclass(frozen=True)
@@ -58,7 +59,7 @@ def summary_handler(
 
 
 class SummaryTools:
-    def register(self, finance_tool: Callable, runtime: ToolRuntime) -> None:
+    def register(self, finance_tool, runtime: ToolRuntime) -> None:
         @finance_tool
         def get_period_summary(
             start_date: StartDate, end_date: EndDate
@@ -71,7 +72,7 @@ class SummaryTools:
             diária é a medida justa para comparar.
             """
             return runtime.run(
-                "get_period_summary",
+                TOOL_NAME,
                 PeriodArgs(start_date, end_date),
                 summary_handler,
                 ToolResult[PeriodSummaryData],
