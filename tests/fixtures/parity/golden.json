@@ -1,0 +1,1074 @@
+{
+  "annual": {
+    "2025": [
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "01",
+        "month_label": "Jan",
+        "saida": 365.0,
+        "saldo": 4635.0,
+        "saldo_acumulado": 4635.0
+      },
+      {
+        "entrada": 5861.13,
+        "investimento": 300.0,
+        "month": "02",
+        "month_label": "Fev",
+        "saida": 752.03,
+        "saldo": 5109.1,
+        "saldo_acumulado": 9744.1
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 0.0,
+        "month": "03",
+        "month_label": "Mar",
+        "saida": 953.24,
+        "saldo": 4046.76,
+        "saldo_acumulado": 13790.86
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "04",
+        "month_label": "Abr",
+        "saida": 1036.09,
+        "saldo": 3963.91,
+        "saldo_acumulado": 17754.77
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "05",
+        "month_label": "Mai",
+        "saida": 971.48,
+        "saldo": 4028.52,
+        "saldo_acumulado": 21783.29
+      },
+      {
+        "entrada": 6105.65,
+        "investimento": 0.0,
+        "month": "06",
+        "month_label": "Jun",
+        "saida": 1088.6,
+        "saldo": 5017.049999999999,
+        "saldo_acumulado": 26800.34
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "07",
+        "month_label": "Jul",
+        "saida": 879.72,
+        "saldo": 4120.28,
+        "saldo_acumulado": 30920.62
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "08",
+        "month_label": "Ago",
+        "saida": 984.21,
+        "saldo": 4015.79,
+        "saldo_acumulado": 34936.409999999996
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 0.0,
+        "month": "09",
+        "month_label": "Set",
+        "saida": 897.96,
+        "saldo": 4102.04,
+        "saldo_acumulado": 39038.45
+      },
+      {
+        "entrada": 6350.17,
+        "investimento": 300.0,
+        "month": "10",
+        "month_label": "Out",
+        "saida": 848.27,
+        "saldo": 5501.9,
+        "saldo_acumulado": 44540.35
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "11",
+        "month_label": "Nov",
+        "saida": 1268.3,
+        "saldo": 3731.7,
+        "saldo_acumulado": 48272.049999999996
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 0.0,
+        "month": "12",
+        "month_label": "Dez",
+        "saida": 1132.33,
+        "saldo": 3867.67,
+        "saldo_acumulado": 52139.719999999994
+      }
+    ],
+    "2026": [
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "01",
+        "month_label": "Jan",
+        "saida": 824.4399999999999,
+        "saldo": 4175.56,
+        "saldo_acumulado": 4175.56
+      },
+      {
+        "entrada": 5894.6900000000005,
+        "investimento": 300.0,
+        "month": "02",
+        "month_label": "Fev",
+        "saida": 616.39,
+        "saldo": 5278.3,
+        "saldo_acumulado": 9453.86
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 0.0,
+        "month": "03",
+        "month_label": "Mar",
+        "saida": 922.6700000000001,
+        "saldo": 4077.33,
+        "saldo_acumulado": 13531.19
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "04",
+        "month_label": "Abr",
+        "saida": 1073.5900000000001,
+        "saldo": 3926.41,
+        "saldo_acumulado": 17457.6
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "05",
+        "month_label": "Mai",
+        "saida": 850.9100000000001,
+        "saldo": 4149.09,
+        "saldo_acumulado": 21606.69
+      },
+      {
+        "entrada": 6139.21,
+        "investimento": 0.0,
+        "month": "06",
+        "month_label": "Jun",
+        "saida": 764.5,
+        "saldo": 5374.71,
+        "saldo_acumulado": 26981.399999999998
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "07",
+        "month_label": "Jul",
+        "saida": 849.1500000000001,
+        "saldo": 4150.85,
+        "saldo_acumulado": 31132.25
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 300.0,
+        "month": "08",
+        "month_label": "Ago",
+        "saida": 628.5600000000001,
+        "saldo": 4371.44,
+        "saldo_acumulado": 35503.69
+      },
+      {
+        "entrada": 5000.0,
+        "investimento": 0.0,
+        "month": "09",
+        "month_label": "Set",
+        "saida": 1031.59,
+        "saldo": 3968.41,
+        "saldo_acumulado": 39472.100000000006
+      },
+      {
+        "entrada": 6383.73,
+        "investimento": 300.0,
+        "month": "10",
+        "month_label": "Out",
+        "saida": 1745.95,
+        "saldo": 4637.78,
+        "saldo_acumulado": 44109.880000000005
+      },
+      {
+        "entrada": 0.0,
+        "investimento": 0.0,
+        "month": "11",
+        "month_label": "Nov",
+        "saida": 1033.3200000000002,
+        "saldo": -1033.3200000000002,
+        "saldo_acumulado": 43076.560000000005
+      },
+      {
+        "entrada": 0.0,
+        "investimento": 0.0,
+        "month": "12",
+        "month_label": "Dez",
+        "saida": 1033.3200000000002,
+        "saldo": -1033.3200000000002,
+        "saldo_acumulado": 42043.240000000005
+      }
+    ]
+  },
+  "months": {
+    "2025-01": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 270.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 40.0
+        },
+        {
+          "category": "(sem categoria)",
+          "total": 30.0
+        },
+        {
+          "category": "Farmácia",
+          "total": 25.0
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": null,
+        "avg_daily_expense": 11.774193548387096,
+        "avg_daily_expense_prev": 0.0,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 0.0,
+        "saidas": 365.0,
+        "saldo": 4635.0,
+        "saldo_acumulado": 4635.0
+      }
+    },
+    "2025-02": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 384.9
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 67.13
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        },
+        {
+          "category": "Freelance",
+          "total": 861.13
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 128.1108610567515,
+        "avg_daily_expense": 26.858214285714286,
+        "avg_daily_expense_prev": 11.774193548387096,
+        "entradas": 5861.13,
+        "investimentos": 300.0,
+        "pct_installments": 0.0,
+        "saidas": 752.03,
+        "saldo": 5109.1,
+        "saldo_acumulado": 9744.099999999999
+      }
+    },
+    "2025-03": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 499.79999999999995
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 94.26
+        },
+        {
+          "category": "Farmácia",
+          "total": 59.18
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 14.488912376093438,
+        "avg_daily_expense": 30.74967741935484,
+        "avg_daily_expense_prev": 26.858214285714286,
+        "entradas": 5000.0,
+        "investimentos": 0,
+        "pct_installments": 31.4716126054299,
+        "saidas": 953.24,
+        "saldo": 4046.76,
+        "saldo_acumulado": 13790.859999999999
+      }
+    },
+    "2025-04": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 614.7
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 121.39
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 12.314457359461759,
+        "avg_daily_expense": 34.53633333333333,
+        "avg_daily_expense_prev": 30.74967741935484,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 28.95501356059802,
+        "saidas": 1036.09,
+        "saldo": 3963.91,
+        "saldo_acumulado": 17754.77
+      }
+    },
+    "2025-05": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 429.6
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 148.52
+        },
+        {
+          "category": "Farmácia",
+          "total": 93.36
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": -9.260591697258823,
+        "avg_daily_expense": 31.338064516129034,
+        "avg_daily_expense_prev": 34.53633333333333,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 30.880718079631077,
+        "saidas": 971.48,
+        "saldo": 4028.52,
+        "saldo_acumulado": 21783.29
+      }
+    },
+    "2025-06": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 631.9000000000001
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "(sem categoria)",
+          "total": 101.05
+        },
+        {
+          "category": "Restaurante",
+          "total": 55.65
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        },
+        {
+          "category": "Freelance",
+          "total": 1105.65
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 15.791026749564216,
+        "avg_daily_expense": 36.28666666666666,
+        "avg_daily_expense_prev": 31.338064516129034,
+        "entradas": 6105.65,
+        "investimentos": 0,
+        "pct_installments": 27.5583318023149,
+        "saidas": 1088.6,
+        "saldo": 5017.049999999999,
+        "saldo_acumulado": 26800.34
+      }
+    },
+    "2025-07": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 459.4
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 82.78
+        },
+        {
+          "category": "Farmácia",
+          "total": 37.54
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": -21.794788215701715,
+        "avg_daily_expense": 28.378064516129033,
+        "avg_daily_expense_prev": 36.28666666666666,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 34.10175965079798,
+        "saidas": 879.72,
+        "saldo": 4120.28,
+        "saldo_acumulado": 30920.62
+      }
+    },
+    "2025-08": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 574.3
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 109.91
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 11.877642886372938,
+        "avg_daily_expense": 31.748709677419356,
+        "avg_daily_expense_prev": 28.378064516129033,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 30.48129972262017,
+        "saidas": 984.21,
+        "saldo": 4015.79,
+        "saldo_acumulado": 34936.409999999996
+      }
+    },
+    "2025-09": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 389.20000000000005
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 137.04
+        },
+        {
+          "category": "Farmácia",
+          "total": 71.72
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": -5.722152792595073,
+        "avg_daily_expense": 29.932000000000002,
+        "avg_daily_expense_prev": 31.748709677419356,
+        "entradas": 5000.0,
+        "investimentos": 0,
+        "pct_installments": 33.40906053721769,
+        "saidas": 897.96,
+        "saldo": 4102.04,
+        "saldo_acumulado": 39038.45
+      }
+    },
+    "2025-10": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 504.09999999999997
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 44.17
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        },
+        {
+          "category": "Freelance",
+          "total": 1350.17
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": -8.580955542239838,
+        "avg_daily_expense": 27.363548387096774,
+        "avg_daily_expense_prev": 29.932000000000002,
+        "entradas": 6350.17,
+        "investimentos": 300.0,
+        "pct_installments": 35.36609805840122,
+        "saidas": 848.27,
+        "saldo": 5501.9,
+        "saldo_acumulado": 44540.35
+      }
+    },
+    "2025-11": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 619.0
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "(sem categoria)",
+          "total": 172.1
+        },
+        {
+          "category": "Farmácia",
+          "total": 105.9
+        },
+        {
+          "category": "Restaurante",
+          "total": 71.3
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 54.499943021286455,
+        "avg_daily_expense": 42.276666666666664,
+        "avg_daily_expense_prev": 27.363548387096774,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 23.653709690136402,
+        "saidas": 1268.3,
+        "saldo": 3731.7,
+        "saldo_acumulado": 48272.049999999996
+      }
+    },
+    "2025-12": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 733.9
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 98.43
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": -13.600628730864022,
+        "avg_daily_expense": 36.526774193548384,
+        "avg_daily_expense_prev": 42.276666666666664,
+        "entradas": 5000.0,
+        "investimentos": 0,
+        "pct_installments": 26.494043255941293,
+        "saidas": 1132.33,
+        "saldo": 3867.67,
+        "saldo_acumulado": 52139.72
+      }
+    },
+    "2026-01": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 348.8
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 300.0
+        },
+        {
+          "category": "Restaurante",
+          "total": 125.56
+        },
+        {
+          "category": "Farmácia",
+          "total": 50.08
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": -27.19083659357253,
+        "avg_daily_expense": 26.594838709677422,
+        "avg_daily_expense_prev": 36.526774193548384,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 36.388336325263204,
+        "saidas": 824.44,
+        "saldo": 4175.5599999999995,
+        "saldo_acumulado": 4175.5599999999995
+      }
+    },
+    "2026-02": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 463.70000000000005
+        },
+        {
+          "category": "Restaurante",
+          "total": 152.69
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        },
+        {
+          "category": "Freelance",
+          "total": 894.69
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": -17.2248088745954,
+        "avg_daily_expense": 22.013928571428572,
+        "avg_daily_expense_prev": 26.594838709677422,
+        "entradas": 5894.6900000000005,
+        "investimentos": 300.0,
+        "pct_installments": 0.0,
+        "saidas": 616.39,
+        "saldo": 5278.3,
+        "saldo_acumulado": 9453.86
+      }
+    },
+    "2026-03": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 578.6
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 199.99
+        },
+        {
+          "category": "Farmácia",
+          "total": 84.26
+        },
+        {
+          "category": "Restaurante",
+          "total": 59.82
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 35.20325684042728,
+        "avg_daily_expense": 29.763548387096776,
+        "avg_daily_expense_prev": 22.013928571428572,
+        "entradas": 5000.0,
+        "investimentos": 0,
+        "pct_installments": 0.0,
+        "saidas": 922.6700000000001,
+        "saldo": 4077.33,
+        "saldo_acumulado": 13531.19
+      }
+    },
+    "2026-04": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 693.5
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 199.99
+        },
+        {
+          "category": "(sem categoria)",
+          "total": 93.15
+        },
+        {
+          "category": "Restaurante",
+          "total": 86.95
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 20.23543990086742,
+        "avg_daily_expense": 35.78633333333334,
+        "avg_daily_expense_prev": 29.763548387096776,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 18.62815413705418,
+        "saidas": 1073.5900000000001,
+        "saldo": 3926.41,
+        "saldo_acumulado": 17457.6
+      }
+    },
+    "2026-05": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 508.4
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 199.99
+        },
+        {
+          "category": "Restaurante",
+          "total": 114.08
+        },
+        {
+          "category": "Farmácia",
+          "total": 28.44
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": -23.29834570715259,
+        "avg_daily_expense": 27.448709677419355,
+        "avg_daily_expense_prev": 35.78633333333334,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 23.503073180477372,
+        "saidas": 850.91,
+        "saldo": 4149.09,
+        "saldo_acumulado": 21606.69
+      }
+    },
+    "2026-06": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 423.3
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 199.99
+        },
+        {
+          "category": "Restaurante",
+          "total": 141.21
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        },
+        {
+          "category": "Freelance",
+          "total": 1139.21
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": -7.16017753542286,
+        "avg_daily_expense": 25.483333333333334,
+        "avg_daily_expense_prev": 27.448709677419355,
+        "entradas": 6139.21,
+        "investimentos": 0,
+        "pct_installments": 26.15958142576848,
+        "saidas": 764.5,
+        "saldo": 5374.71,
+        "saldo_acumulado": 26981.4
+      }
+    },
+    "2026-07": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 538.2
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 199.99
+        },
+        {
+          "category": "Farmácia",
+          "total": 62.62
+        },
+        {
+          "category": "Restaurante",
+          "total": 48.34
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 7.489609485432173,
+        "avg_daily_expense": 27.391935483870967,
+        "avg_daily_expense_prev": 25.483333333333334,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 23.551787081198846,
+        "saidas": 849.15,
+        "saldo": 4150.85,
+        "saldo_acumulado": 31132.25
+      }
+    },
+    "2026-08": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 353.1
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 199.99
+        },
+        {
+          "category": "Restaurante",
+          "total": 75.47
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": -25.977742448330677,
+        "avg_daily_expense": 20.276129032258066,
+        "avg_daily_expense_prev": 27.391935483870967,
+        "entradas": 5000.0,
+        "investimentos": 300.0,
+        "pct_installments": 31.817169403080054,
+        "saidas": 628.5600000000001,
+        "saldo": 4371.44,
+        "saldo_acumulado": 35503.69
+      }
+    },
+    "2026-09": {
+      "expenses_by_cat": [
+        {
+          "category": "Mercado",
+          "total": 468.0
+        },
+        {
+          "category": "Eletrônicos",
+          "total": 199.99
+        },
+        {
+          "category": "(sem categoria)",
+          "total": 164.2
+        },
+        {
+          "category": "Restaurante",
+          "total": 102.6
+        },
+        {
+          "category": "Farmácia",
+          "total": 96.8
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 69.59022739807389,
+        "avg_daily_expense": 34.38633333333333,
+        "avg_daily_expense_prev": 20.276129032258066,
+        "entradas": 5000.0,
+        "investimentos": 0,
+        "pct_installments": 19.386578000949992,
+        "saidas": 1031.59,
+        "saldo": 3968.41,
+        "saldo_acumulado": 39472.1
+      }
+    },
+    "2026-10": {
+      "expenses_by_cat": [
+        {
+          "category": "Eletrônicos",
+          "total": 1033.3200000000002
+        },
+        {
+          "category": "Mercado",
+          "total": 582.9
+        },
+        {
+          "category": "Restaurante",
+          "total": 129.73
+        }
+      ],
+      "income_by_cat": [
+        {
+          "category": "Salário",
+          "total": 5000.0
+        },
+        {
+          "category": "Freelance",
+          "total": 1383.73
+        }
+      ],
+      "summary": {
+        "avg_daily_delta_pct": 534.681656472048,
+        "avg_daily_expense": 218.24375,
+        "avg_daily_expense_prev": 34.38633333333333,
+        "entradas": 6383.73,
+        "investimentos": 300.0,
+        "pct_installments": 11.454509006558036,
+        "saidas": 1745.95,
+        "saldo": 4637.78,
+        "saldo_acumulado": 44109.88
+      }
+    },
+    "2026-11": {
+      "expenses_by_cat": [
+        {
+          "category": "Eletrônicos",
+          "total": 1033.3200000000002
+        }
+      ],
+      "income_by_cat": [],
+      "summary": {
+        "avg_daily_delta_pct": -84.21764655345228,
+        "avg_daily_expense": 34.444,
+        "avg_daily_expense_prev": 218.24375,
+        "entradas": 0,
+        "investimentos": 0,
+        "pct_installments": 100.0,
+        "saidas": 1033.3200000000002,
+        "saldo": -1033.3200000000002,
+        "saldo_acumulado": 43076.56
+      }
+    },
+    "2026-12": {
+      "expenses_by_cat": [
+        {
+          "category": "Eletrônicos",
+          "total": 1033.3200000000002
+        }
+      ],
+      "income_by_cat": [],
+      "summary": {
+        "avg_daily_delta_pct": -3.2258064516129026,
+        "avg_daily_expense": 33.332903225806454,
+        "avg_daily_expense_prev": 34.444,
+        "entradas": 0,
+        "investimentos": 0,
+        "pct_installments": 100.0,
+        "saidas": 1033.3200000000002,
+        "saldo": -1033.3200000000002,
+        "saldo_acumulado": 42043.24
+      }
+    }
+  },
+  "my_finance_commit": "f053c8840c96486f09d3d060590d057e483a0d5e",
+  "reference_date": "2026-10-08"
+}
