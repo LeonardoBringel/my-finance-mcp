@@ -50,3 +50,19 @@ def test_percentage_rounds_half_up_to_one_place(
 
 def test_percentage_with_zero_denominator_is_none():
     assert pct(Decimal(5), Decimal(0)) is None
+
+
+def test_percentage_rounding_to_negative_zero_returns_positive_zero():
+    result = pct(Decimal("-0.04"), Decimal("100"))
+
+    assert result == 0.0
+    assert math.copysign(1, result) == 1.0
+
+
+def test_negative_percentage_keeps_its_sign():
+    assert pct(Decimal("-1"), Decimal("8")) == -12.5
+
+
+def test_money_sums_in_decimal_and_rounds_only_once():
+    # Rounding each 10.005 first would give 10.01 + 10.01 = 20.02.
+    assert to_output(Decimal("10.005") + Decimal("10.005")) == 20.01

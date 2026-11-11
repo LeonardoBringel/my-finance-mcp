@@ -18,4 +18,6 @@ def pct(numerator: Decimal, denominator: Decimal) -> float | None:
     if denominator == 0:
         return None
     share = numerator / denominator * 100
-    return float(share.quantize(_ONE_PLACE, rounding=ROUND_HALF_UP))
+    rounded = float(share.quantize(_ONE_PLACE, rounding=ROUND_HALF_UP))
+    # Same as in to_output: a tiny negative share must not print "-0.0".
+    return rounded + 0.0
