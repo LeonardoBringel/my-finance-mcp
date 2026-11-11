@@ -201,6 +201,18 @@ def test_more_than_200_categories_mark_the_result_truncated():
     assert result.structured_content["meta"]["truncated"] is True
     assert len(result.structured_content["data"]["categories"]) == 200
     assert result.structured_content["data"]["total_count"] == 201
+    assert result.structured_content["meta"]["warnings"] == []
+
+
+def test_no_data_ignores_transactions_of_categories_cut_off_at_200():
+    rows = [category(i, f"Cat {i:03d}", "saida") for i in range(201)]
+    data = CategoriesOnlyData(rows, CategoryCounts({200: 1}, uncategorized=0))
+
+    _, result = call(data)
+
+    assert result.structured_content["meta"]["truncated"] is True
+    assert len(result.structured_content["data"]["categories"]) == 200
+    assert result.structured_content["meta"]["warnings"] == ["NO_DATA"]
 
 
 def test_income_filter_with_only_uncategorized_transactions_has_no_data():
