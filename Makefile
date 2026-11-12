@@ -1,4 +1,7 @@
-.PHONY: install run test lint
+.PHONY: deploy install run test lint
+
+deploy:
+	docker compose up -d --build
 
 install:
 	uv sync
